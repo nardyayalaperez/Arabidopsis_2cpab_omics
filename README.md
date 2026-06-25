@@ -1,4 +1,4 @@
-# Arabidopsis_2cpab_multiomics
+# Arabidopsis_2cpab_omics
 
 This repository contains the analysis scripts used in the Master's Thesis (TFM) "Redox control of lipid catabolism at early stages of plant development", investigating the impact of 2-Cys peroxiredoxin (2-Cys Prx) deficiency on lipid catabolism in Arabidopsis thaliana seedlings, using complementary transcriptomic, proteomic and fatty acid composition analyses.
 
