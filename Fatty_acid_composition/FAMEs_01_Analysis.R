@@ -28,6 +28,7 @@
 #-------------------------------------------------------------------------------
 # PACKAGE LOADING
 #-------------------------------------------------------------------------------
+library(car)  # leveneTest()
 library(ggplot2)    # Bar plot and boxplot visualization
 library(tidyverse)   # Data manipulation
 library(reshape2)    # Data reshaping
@@ -104,7 +105,36 @@ summary.df <- data.frame(
 print(summary.df)
 write.csv(summary.df, "tables/FAMEs_summary.csv", row.names = FALSE)
 
+#-------------------------------------------------------------------------------
+# NORMALITY AND HOMOGENEITY OF VARIANCE ASSESSMENT
+#-------------------------------------------------------------------------------
 
+# Shapiro-Wilk test is used to assess normality within each genotype group,
+# and Levene's test is used to assess homogeneity of variance between
+# groups, for each fatty acid species.
+
+shapiro.wt   <- sapply(rownames(pct.matrix), function(fa)
+  shapiro.test(pct.matrix[fa, wt.cols])$p.value)
+shapiro.cpab <- sapply(rownames(pct.matrix), function(fa)
+  shapiro.test(pct.matrix[fa, cpab.cols])$p.value)
+
+levene.p <- sapply(rownames(pct.matrix), function(fa) {
+  values <- c(pct.matrix[fa, wt.cols], pct.matrix[fa, cpab.cols])
+  groups <- factor(condition)
+  leveneTest(values ~ groups)$`Pr(>F)`[1]
+})
+
+summary.df$Shapiro.WT    <- round(shapiro.wt, 4)
+summary.df$Shapiro.2cpab <- round(shapiro.cpab, 4)
+summary.df$Levene.p      <- round(levene.p, 4)
+
+summary.df
+
+# Once normality and variance homogeneity are assessed, Welch's two-sample
+# t-test is applied to each fatty acid species, as it does not require
+# equal variances between groups and is robust to minor deviations from
+# normality.
+             
 #-------------------------------------------------------------------------------
 # STATISTICAL TESTING
 #-------------------------------------------------------------------------------
